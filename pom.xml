@@ -12,6 +12,9 @@
     <modules>
         <module>springboot-helloworld</module>
 
+        <!--配置文件-->
+        <module>springboot-properties</module>
+
     </modules>
 
 </project>
