@@ -1,0 +1,11 @@
+home:
+  province: Inner_Mongolia
+  city: Jn
+  desc: 我家住在${home.province}的${home.city}
+
+# 随机属性
+user:
+  id: ${random.long}
+  age: ${random.int[1,200]}
+  desc: yann叫做${random.value}
+  uuid: ${random.uuid}
