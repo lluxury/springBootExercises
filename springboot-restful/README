@@ -1,0 +1,108 @@
+// org.spring.springboot.controller - Controller 层
+// org.spring.springboot.dao - 数据操作层 DAO
+// org.spring.springboot.domain - 实体类
+// org.spring.springboot.service - 业务逻辑层
+// Application - 应用启动类
+// application.properties - 应用配置文件，应用启动会自动读取配置
+
+
+
+
+// application.properties
+
+## 数据源配置
+spring.datasource.url=jdbc:mysql://192.168.142.10:3306/springbootdb?useUnicode=true&characterEncoding=utf8
+spring.datasource.username=root
+spring.datasource.password=admin
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+
+## Mybatis 配置
+mybatis.typeAliasesPackage=org.spring.springboot.domain
+mybatis.mapperLocations=classpath:mapper/*.xml 
+*/
+
+mapper
+  CityMapper.xml 
+// 猜是mybatis的配置,不了解先pass 
+
+domain
+
+dao  
+      
+service
+impl
+  CityServiceImpl.java
+CityService.java
+
+controller  
+
+
+// 测试
+postman
+
+// ID，获取城市信息
+{{url}}/api/city/1
+
+获取城市列表
+{{url}}/api/city
+
+
+POST {{url}}/api/city
+{
+    "id": 3,
+    "provinceId": 1,
+    "cityName": "Jn市",
+    "description": "yann的家在Jn。"
+}
+// 构造信息,使用POST方法
+
+
+PUT {{url}}/api/city
+{
+    "id": 3,
+    "provinceId": 4,
+    "cityName": "Jn市",
+    "description": "yann的家在Jn。"
+}
+// 提交更新
+
+
+
+
+// REST 是属于 WEB 自身的一种架构风格，是在 HTTP 1.1 规范下实现的
+
+// 要素
+// 资源（Resource）
+// 资源的表述（Representation）
+// 状态转移（State Transfer）
+// 统一接口（Uniform Interface）
+// 超文本驱动（Hypertext Driven）
+
+// 特性
+// 面向资源（Resource Oriented）
+// 可寻址（Addressability）
+// 连通性（Connectedness）
+// 无状态（Statelessness）
+// 统一接口（Uniform Interface）
+// 超文本驱动（Hypertext Driven）
+
+
+// Controller 实现 Restful HTTP 服务
+
+
+// @RequestMapping 处理请求地址映射。
+// method - 指定请求的方法类型：POST/GET/DELETE/PUT 等
+// value - 指定实际的请求地址
+// consumes - 指定处理请求的提交内容类型，例如 Content-Type 头部设置application/json, text/html
+// produces - 指定返回的内容类型
+
+// 主要使用了 method value
+
+
+// @PathVariable URL 映射时，用于绑定请求参数到方法参数
+// @RequestBody 这里注解用于读取请求体 boy 的数据，通过 HttpMessageConverter 解析绑定到对象中
+
+
+// POST/GET/DELETE/PUT
+
+// Springboot 实现 Restful 服务，基于 HTTP / JSON 传输，适用于前后端分离
