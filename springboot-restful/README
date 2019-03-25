@@ -106,3 +106,72 @@ PUT {{url}}/api/city
 // POST/GET/DELETE/PUT
 
 // Springboot 实现 Restful 服务，基于 HTTP / JSON 传输，适用于前后端分离
+
+
+// RESTful API
+// RESTful架构是无状态的，表现为请求-响应的形式
+// 有别于基于Bower的SessionId不同
+
+
+// MVC
+Pc
+weChat -> MVC -> DAO -DB
+H5
+
+// REST API
+Web
+Application -> REST API -> Logic -> DB
+Open api
+
+
+
+
+// 权限控制
+
+// 方法定义：
+GET /user # 获取user列表
+GET /user/3 # 查看序号为3的user
+POST /user # 新建一个user
+PUT /user/3  # 更新序号为3的user
+DELETE /user/3 #删除user 3
+
+// GET /admin/1/user/10 # 管理员1号，查看序号为3的user信息
+
+
+
+// 权限控制
+// RESTful是无状态的，所以每次请求就需要对起进行认证和授权
+
+// 身份认证，即登录验证用户是否拥有相应的身份
+// 一个Web页面点击登录后，服务端进行用户密码的校验
+
+
+// 权限验证（授权）
+// 在身份认证后，验证该身份具体拥有某种权限
+// 针对于某种资源的CRUD,不同用户的操作权限不同
+
+
+
+// 一般简单项目：做个sign（加密加盐参数）+ 针对用户的access_token
+// 复杂的，加入 SLL ，并使用OAuth2进行对token的安全传输
+
+
+
+// Access Token权限解决
+
+// AccessToken 拦截器
+AccessTokenVerifyInterceptor.java
+
+  // 从request获取token
+  // 根据token获取校验对象信息（也可以加入过期时间校验，简单）
+  // 通过校验信息获取用户信息
+
+
+// 配置拦截
+WebMvcConfig.jav
+// 将拦截器配置成Bean
+// 拦截器注册注入该拦截器，并配置拦截的URL
+
+
+// 两端代码欠缺太多,只熟悉一下,
+// 放在项目里,项目运行不起来,先改名了
