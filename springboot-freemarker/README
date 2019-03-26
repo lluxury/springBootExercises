@@ -1,0 +1,71 @@
+
+// server.port=8081 
+// #为了避免和前一个项目冲突,改了端口
+// #后来发现我没有写总的启动入口,其实启动需要的项目就好了
+
+## 文件配置路径
+spring.freemarker.template-loader-path=classpath:/web/
+spring.freemarker.cache=false
+spring.freemarker.charset=UTF-8
+spring.freemarker.check-template-location=true
+spring.freemarker.content-type=text/html
+spring.freemarker.expose-request-attributes=true
+spring.freemarker.expose-session-attributes=true
+spring.freemarker.request-context-attribute=request
+spring.freemarker.suffix=.ftl
+
+// 模板位置,缓存,编码,模板,内容html,请求属性,session属性,内容属性,后缀
+
+
+    @RequestMapping(value = "/api/city/{id}", method = RequestMethod.GET)
+    public String findOneCity(Model model, @PathVariable("id") Long id){
+        model.addAttribute("city", cityService.findCityById(id));
+        return "city";
+    }
+
+
+// 网页加变量
+vi city.ftl
+    <!DOCTYPE html>
+
+    <html lang="en">
+
+    <body>
+    City ${city.cityName}! <br>
+    Q:Why I like?<br>
+    A:${city.description}!
+    </body>
+
+    </html>
+
+
+
+
+
+
+
+    @RequestMapping(value = "/api/city", method = RequestMethod.GET)
+    public String findAllCity(Model model){
+        List<City> cityList=cityService.findAllCity();
+        model.addAttribute("cityList", cityList);
+        return "cityList";
+    }
+// 不是很明白,加了个Model 给模板用?
+
+
+    <!DOCTYPE html>
+
+    <html lang="en">
+
+    <body>
+    <#list cityList as city>
+
+    City: ${city.cityName}!<br>
+    Q:Why I like?<br>
+    A:${city.description}!
+    </#list>
+    </body>
+    </html>
+
+
+// 返回列表和返回对象?
