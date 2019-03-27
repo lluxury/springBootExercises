@@ -1,0 +1,77 @@
+
+// 直接复制 restful 的项目测试
+
+// 包名会自动改, 引用需要修改
+// mapper里面的配置也需要改
+
+// 运行不起来,应该哪里没配置,从头捋一下
+
+vi SpringbootMybatisApplication.java
+// 添加
+@MapperScan("com.yann.springbootmybatis.dao")
+
+// 建库,建表
+
+// org.spring.springboot.controller - Controller 层
+// org.spring.springboot.dao - 数据操作层 DAO
+// org.spring.springboot.domain - 实体类
+// org.spring.springboot.service - 业务逻辑层
+// Application - 应用启动类
+// application.properties - 应用配置文件，应用启动会自动读取配置
+
+// 配置mybatis流程
+// pom 添加 Mybatis 依赖
+<!-- Spring Boot Mybatis 依赖 -->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>${mybatis-spring-boot}</version>
+</dependency>
+
+
+
+            mybatis 
+            mybatis-spring                                    spring-boot-start-loging
+mybatis-spring-boot-starter ->        mybatis-spring -> spring-boot-starter -> snakeyaml
+        spring-boot-starter-jdbc  ->  tomcat-jdbc -> tomcat-juli
+                                      mybatis-spring-boot-autoconfigure -> spring-boot-autoconfigure
+
+// 依赖检查
+spring-boot-starter-parent                                 
+5.1.39
+spring-boot-starter-web
+spring-boot-starter-test
+mybatis-spring-boot-starter
+mysql-connector-java
+junit
+
+application.properties 
+// Mybatis 相关配置
+
+// ## Mybatis 配置  实体类包路径,及resources目录 (classpath 路径)下 mapper 包下
+mybatis.typeAliasesPackage=com.yann.springbootmybatis.domain
+mybatis.mapperLocations=classpath:mapper/*.xml
+*/
+
+// 其他配置相关：
+mybatis.config = mybatis 配置文件名称
+mybatis.mapperLocations = mapper xml 文件地址
+mybatis.typeAliasesPackage = 实体类包路径
+mybatis.typeHandlersPackage = type handlers 处理器包路径
+mybatis.check-config-location = 检查 mybatis 配置是否存在，一般命名为 mybatis-config.xml
+
+mybatis.executorType = 执行模式。默认是 SIMPLE
+// 这里好像没用上
+
+
+// 在 Application 应用启动类添加注解 MapperScan
+@MapperScan("com.yann.springbootmybatis.dao")
+
+// 就是拉下这一句,才没起来
+// mapper 接口类扫描包配置注解 MapperScan,注册 Mybatis mapper 接口类
+
+
+// 添加相应的 City domain类、CityDao mapper接口类
+
+
+
