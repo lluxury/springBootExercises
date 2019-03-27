@@ -17,7 +17,8 @@ public interface CityDao {
     List<City> findAllCity();
 
     City findById(@Param("id") Long id);
-
+//    City findByName(@Param ("city_name") String city_name);
+    City findByName(@Param("cityName") String cityName);    // 使用属性名和数据库字段无关了
     Long saveCity(City city);
     Long updateCity(City city);
     Long deleteCity(Long id);

@@ -6,9 +6,7 @@
 
 // 运行不起来,应该哪里没配置,从头捋一下
 
-vi SpringbootMybatisApplication.java
-// 添加
-@MapperScan("com.yann.springbootmybatis.dao")
+
 
 // 建库,建表
 
@@ -64,6 +62,7 @@ mybatis.executorType = 执行模式。默认是 SIMPLE
 // 这里好像没用上
 
 
+vi SpringbootMybatisApplication.java
 // 在 Application 应用启动类添加注解 MapperScan
 @MapperScan("com.yann.springbootmybatis.dao")
 
@@ -73,5 +72,56 @@ mybatis.executorType = 执行模式。默认是 SIMPLE
 
 // 添加相应的 City domain类、CityDao mapper接口类
 
+
+// 写CityMapper.xml
+<mapper namespace=
+<resultMap groupId type
+    <result column="city_name" property="cityName" />       // 表名,属性名
+<parameterMap
+<sql
+<select id=" xxx>
+
+"// 查询的写法,注意值的类型
+
+    <select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from city
+        where city_name = #{cityName}
+    </select>
+
+
+
+// 定义好了 findByName 查询的
+
+
+// 修改dao
+vi CityDao.java
+    City findByName(@Param("cityName") String cityName);    // 使用属性名和数据库字段无关了
+
+// 修改抽象服务
+vi CityService.java 
+    City findCityByName(String cityName);
+
+// 修改实现服务
+vi CityServiceImpl.java
+        public City findCityByName(String cityName){
+        return cityDao.findByName(cityName);
+    }
+
+// 修改控制器
+vi CityRestController.java
+
+    // @RequestMapping(value = "/api/city/{cityName}",method = RequestMethod.GET)
+    // public City findCityByName(@PathVariable("cityName") String cityName){return cityService.findCityByName(cityName);}
+
+    @RequestMapping(value = "/api/city", method = RequestMethod.GET)
+    public City findOneCity(@RequestParam(value = "cityName", required = true) String cityName) {
+        return cityService.findCityByName(cityName);
+    }
+    
+// 控制器的写法还是要好好学啊,直接500了
+    // 测试
+http://localhost:8080/api/city?cityName=xx
 
 

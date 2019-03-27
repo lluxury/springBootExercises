@@ -31,6 +31,10 @@ public class CityServiceImpl implements CityService {
         return cityDao.findById(id);
     }
 
+    public City findCityByName(String cityName){
+        return cityDao.findByName(cityName);
+    }
+
     @Override
     public Long saveCity(City city){
         return cityDao.saveCity(city);
