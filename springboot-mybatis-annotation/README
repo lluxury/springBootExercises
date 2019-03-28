@@ -1,0 +1,33 @@
+
+vi application.properties
+// 添加数据连接
+
+// 注解的方式是 在dao上面操作
+
+// 添加 @Mapper、@Select 和 @Results
+
+@Mapper // 标志为 Mybatis 的 Mapper
+public interface CityDao {
+
+// @Select("SELECT * FROM city")
+// 有问题, 数据库超过2条的时候,会报错
+@Select("SELECT * FROM city where city_name = #{cityName}")
+
+// 测试有必要多条测试,空值测试
+
+// selectOne只能查出一个结果 ,没使用
+
+
+// 返回 Map 结果集
+@Results({
+@Result(property = "id", column = "id"),
+@Result(property = "provinceId", column = "province_id"),
+@Result(property = "cityName", column = "city_name"),
+@Result(property = "description", column = "description"),
+})
+City findByName(@Param("cityName") String cityName);
+}
+
+// 真是的,不能让我顺顺利利完成一个例子么,不过也多知道了一个点
+
+// 第三方包, org.apache.ibatis, org.apache.ibatis下annotations 包提供了各种注解

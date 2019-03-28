@@ -31,8 +31,8 @@ public class CityRestController {
         return cityService.findCityByName(cityName);
     }
 
-    @RequestMapping(value = "/api/city/{cityName}",method = RequestMethod.GET)
-    public City findCityByName(@PathVariable("cityName") String cityName){return cityService.findCityByName(cityName);}
+//    @RequestMapping(value = "/api/city/{cityName}",method = RequestMethod.GET)
+//    public City findCityByName(@PathVariable("cityName") String cityName){return cityService.findCityByName(cityName);}
 
 //    @RequestMapping(value = "/api/city", method = RequestMethod.GET)
 //    public List<City> findAllCity(){
