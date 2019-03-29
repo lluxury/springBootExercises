@@ -250,4 +250,4 @@ vi pom.xml
         <!--<java.version>1.8</java.version>-->
     <!--</properties>-->
 
-// properties,还要研究一下,这个是默认生成的,怀疑是版本记录
+// properties,还要研究一下,这个是默认生成的,怀疑是版本不匹配

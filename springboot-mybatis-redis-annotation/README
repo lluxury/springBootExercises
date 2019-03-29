@@ -1,0 +1,39 @@
+// 配置pom 大幅删减
+spring-boot-starter-cache
+spring-boot-starter-data-redis
+spring-boot-starter-web
+
+// 更新application.properties
+    // 只配置了redis的信息
+
+// 注解版本没有mapper目录
+
+// 没有配置数据库也就没有dao
+
+// 实体类添加City函数
+// 没有数据库,只能在类型里记录字段了
+
+    public City(Long id, Long provinceId, String cityName, String description) {
+        this.id = id;
+        this.provinceId = provinceId;
+        this.cityName = cityName;
+        this.description = description;
+    }
+
+
+// 服务使用了HashMap 模拟数据库操作,了解一下
+
+
+// 服务写完写测试
+
+
+// 测试通过,但是redis上看不到结果,怀疑没有存在redis上,或在idea自已的redis
+// 确认,关闭redis后,测试仍然可以通过
+
+// 使用Spring的CacheManager接口，底层实现可以是Redis，使用@Cachable、@Evict等注解完成数据的缓存
+
+// spring cache已经提供了对Redis的支持，只需要配置注解就可以
+
+// 仅了解用
+// 学习测试调用接口的方式
+// City类，cityService的各种方法，通过日志记录结果
