@@ -1,0 +1,253 @@
+
+// 缓存的应用场景
+// 根据商品 ID 获取商品信息时，店铺信息和商品详情信息就可以缓存在 Redis，直接从 Redis 获取
+// 如何对缓存进行更新
+
+http://coolshell.cn/articles/17416.html
+
+// 缓存更新的模式有四种：
+Cache aside, 
+Read through, 
+Write through, 
+Write behind caching
+
+Cache Aside 策略，
+// 从三个维度：（摘自 耗子叔叔博客）
+// 失效：应用程序先从cache取数据，没有得到，则从数据库中取数据，成功后，放到缓存中。
+// 命中：应用程序从cache中取数据，取到后返回。
+// 更新：先把数据存到数据库中，成功后，再让缓存失效
+
+// 流程：
+// 获取商品详情
+
+// 从商品 Cache 中获取商品详情，如果存在，则返回获取 Cache 数据返回
+
+ // 如果不存在，则从商品 DB 中获取。获取成功后，将数据存到 Cache 中
+ //    则下次获取商品详情，就可以从 Cache 就可以得到商品详情数据
+
+// 从商品 DB 中更新或者删除商品详情成功后，则从缓存中删除对应商品的详情缓存
+
+
+// 创建数据库
+    // 修改数据库
+CREATE DATABASE springbootdb_cluster;
+
+use springbootdb_cluster
+
+DROP TABLE IF EXISTS  `city`;
+CREATE TABLE `city` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '城市编号',
+  `province_id` int(10) unsigned  NOT NULL COMMENT '省份编号',
+  `city_name` varchar(25) DEFAULT NULL COMMENT '城市名称',
+  `description` varchar(25) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT city VALUES (1 ,1,'Jn市','测试城市。');
+
+
+
+
+// 部署 Redis
+wget http://download.redis.io/releases/redis-2.8.17.tar.gz
+tar zxvf redis-2.8.17.tar.gz
+cd redis-2.8.17/
+make
+sudo cp redis.conf /etc/
+cd src/
+sudo cp redis-benchmark redis-cli redis-server /usr/bin/
+vim /etc/redis.conf
+daemonize 从 no 修改成 yes
+redis-server /etc/redis.conf
+ps -ef | grep redis
+redis-cli
+ping
+
+
+
+
+
+// 检查pom.xml
+    <properties>
+        <mybatis-spring-boot>1.2.0</mybatis-spring-boot>
+        <mysql-connector>5.1.39</mysql-connector>
+        <spring-boot-starter-redis-version>1.3.2.RELEASE</spring-boot-starter-redis-version>
+    </properties>
+
+// 先不加
+
+
+
+// 配置 application.properties
+// ## 数据源配置
+spring.datasource.url=jdbc:mysql://192.168.142.10:3306/springbootdb?useUnicode=true&characterEncoding=utf8
+spring.datasource.username=root
+spring.datasource.password=admin
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+
+// 注意数据源的名字,在哪里使用
+
+
+// ## Mybatis 配置
+mybatis.typeAliasesPackage=com.yann.springbootmybatisredis.domain
+mybatis.mapperLocations=classpath:mapper/*.xml
+*/
+
+// 实体类的位置
+
+
+// ## Redis 配置
+## Redis数据库索引（默认为0）
+spring.redis.database=0
+## Redis服务器地址
+spring.redis.host=192.168.142.10
+## Redis服务器连接端口
+spring.redis.port=6379
+## Redis服务器连接密码（默认为空）
+spring.redis.password=
+## 连接池最大连接数（使用负值表示没有限制）
+spring.redis.pool.max-active=8
+## 连接池最大阻塞等待时间（使用负值表示没有限制）
+spring.redis.pool.max-wait=-1
+## 连接池中的最大空闲连接
+spring.redis.pool.max-idle=8
+## 连接池中的最小空闲连接
+spring.redis.pool.min-idle=0
+## 连接超时时间（毫秒）
+spring.redis.timeout=0
+
+// 注意地址,密码
+
+
+
+// 写实体类,dao
+// 实体类要继承序列化
+
+
+// 写mapper,注意拼写和空格
+
+
+// 写抽象接口,标明接口用途
+// 貌似返回类型在前?
+
+// 城市业务逻辑实现类
+
+// 这次的服务比较复杂了,几个逻辑都在这里
+
+    /**
+     * 获取城市逻辑：
+     * 如果缓存存在，从缓存中获取城市信息
+     * 如果缓存不存在，从 DB 中获取城市信息，然后插入缓存
+     */
+    public City findCityById(Long id) {
+
+    /**
+     * 更新城市逻辑：
+     * 如果缓存存在，删除
+     * 如果缓存不存在，不操作
+     */
+    public Long updateCity(City city) {
+
+
+
+// 这次的故障在pom上,乘机把pom整理清楚
+vi pom.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+// 开头
+
+
+    <groupId>com.yann</groupId>
+    <artifactId>springboot-mybatis-redis</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>springboot-mybatis-redis :: 整合 Mybatis 并使用 Redis 作为缓存</name>
+    <description>Demo project for Spring Boot</description>
+
+// 项目说明
+
+    <!-- Spring Boot 启动父依赖 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.3.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+// 看注释
+
+    <properties>
+        <mybatis-spring-boot>1.2.0</mybatis-spring-boot>
+        <mysql-connector>5.1.39</mysql-connector>
+        <spring-boot-starter-redis-version>1.3.2.RELEASE</spring-boot-starter-redis-version>
+    </properties>
+// 暂未添加
+
+
+        <!-- Spring Boot Redis 依赖 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-redis</artifactId>
+        <version>${spring-boot-starter-redis-version}</version>
+    </dependency>
+// 看注释
+// 我用的是spring-boot-starter-data-redis 哪来的?
+
+//     <dependency>
+//     <groupId>org.springframework.boot</groupId>
+//     <artifactId>spring-boot-starter-data-redis</artifactId>
+// </dependency>
+// 目前证实不能用,原因待分析
+
+<!-- Spring Boot Web 依赖 -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+
+    // <!-- Spring Boot Test 依赖 -->
+    // <dependency>
+    //     <groupId>org.springframework.boot</groupId>
+    //     <artifactId>spring-boot-starter-test</artifactId>
+    //     <scope>test</scope>
+    // </dependency>
+// 我没加
+
+
+    <!-- Spring Boot Mybatis 依赖 -->
+    <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>${mybatis-spring-boot}</version>
+    </dependency>
+// 我写的2.0 系统生成
+
+
+            <!-- MySQL 连接驱动依赖 -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql-connector}</version>
+    </dependency>
+//同上
+
+
+        <!-- Junit -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+    </dependency>
+//我没用,我用spring的
+
+
+
+// 问题找到了
+    <!--<properties>-->
+        <!--<java.version>1.8</java.version>-->
+    <!--</properties>-->
+
+// properties,还要研究一下,这个是默认生成的,怀疑是版本记录
