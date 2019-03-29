@@ -1,0 +1,177 @@
+
+Druid 是 Java 的数据库连接池组件
+
+// DruidDriver 代理 Driver，能够提供基于 Filter－Chain 模式的插件体系。
+// DruidDataSource 高效可管理的数据库连接池
+// SQLParser
+
+// 生产库,历史库
+
+// 案例：
+// user 用户表在主库 master 上，地址表 city 在从库 cluster 上
+// 获取 根据用户名获取用户信息，包括从库的地址信息 REST API，
+// 需要从主库和从库中分别获取数据，并在业务逻辑层组装返回
+
+// 访问名称出城市, user为主,库名为 db
+//             city为从,库名为cluster
+
+
+CREATE DATABASE springbootdb;
+
+use springbootdb
+
+DROP TABLE IF EXISTS `user`;
+
+// 注意使用的引号
+
+CREATE TABLE user( 
+    id INT(10) unsigned PRIMARY KEY NOT NULL COMMENT '用户编号' AUTO_INCREMENT,  
+    user_name VARCHAR(25) COMMENT '用户名称',
+    description VARCHAR(25) COMMENT '描述'  
+    )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+
+INSERT user VALUES(1,'YANN','多数据源');
+
+
+
+// 从库
+CREATE DATABASE springbootdb_cluster;
+
+use springbootdb_cluster
+
+DROP TABLE IF EXISTS `city`;
+CREATE TABLE user
+(
+id INT(10) unsigned PRIMARY KEY NOT NULL COMMENT '用户编号' AUTO_INCREMENT,
+user_name VARCHAR(25) COMMENT '用户名称',
+description VARCHAR(25) COMMENT '描述'
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+INSERT user VALUES (1 ,'abc','测试');
+
+
+
+
+
+// 修改数据库配置
+vi application.properties
+
+    master.datasource.driverClassNam=xx
+
+    cluster.datasource.driverClassName=com.mysql.jdbc.Driver
+
+// 在domain 中添加 User.java
+
+// 实例化 City 类型, 
+
+    private City city;
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+// 其他按照数据库里的字段添加
+
+
+// 在dao中添加连个目录 
+
+cluster 
+  vi  CityDao.java 
+
+master
+  vi UserDao.java
+
+
+
+
+// 建立mapper目录
+    // 建cluster master
+
+xml文件很容易错,要严格注意格式!!
+
+cluster 
+vi CityMapper.xml
+
+    <mapper namespace
+        com.yann.springbootmybatismutildatasource.dao.cluster.CityDao
+        // 有了dao比较方便,可以匹配出来,名字空间
+    
+    <resultMap
+        com.yann.springbootmybatismutildatasource.domain.City
+        // BaseResultMap 其实是自己起的,定位字段文件,结果集,给select用的
+    
+        <result column="city_name" property="cityName" />
+        // 数据库字段和程序字段在这里转换
+    
+         <parameterMap id="City" type="com.yann.springbootmybatismutildatasource.domain.City" />
+         // 参数集,id是数据表名,指向也是字段文件
+    
+        <sql id="Base_Column_List">
+            id,province_id,city_name,description
+        </sql>
+        // 不明,使用的都是数据库字段
+    
+        <select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+            select
+            <include refid="Base_Column_list">
+            from city
+            where city_name = #{cityName}
+        </select>
+        // 查询 findByName 是自定名称,算定结果集,类型
+        // 查询全部 从 city 当 city_name字段,等于,cityName给定参数?
+        // 应该是比较粗的写法,生产中会精细化,大约
+
+
+
+master
+vi UserMapper.xml
+    // mapper 的xml格式没有啊,可以新建一个
+
+// 2个map文件写好
+
+// 很大原因还是没分清主从,跟着例子走了
+
+
+
+// 写抽象服务及服务实现
+
+vi UserService.java
+
+vi UserServiceImpl.java
+    // 主库查名字,从库查城市
+    // 从库结果 set到主库字段上,返回 user 类型
+    // 需求是根据用户名,获取城市信息
+
+    public User findByName(String userName) {
+        User user = userDao.findByName(userName);
+        City city = cityDao.findByName("Jn市");
+        user.setCity(city);
+        return user;
+
+
+// 写控制器层
+vi UserRestController.java
+// 调用 userService.findByName(userName) 和之前查不多
+  return userService.findByName(userName);
+
+写配置
+config
+   ds
+   vi MasterDataSourceConfig.java
+
+   vi ClusterDataSourceConfig.java
+
+
+
+// 测试
+http://localhost:8080/api/user?userName=YANN
+
+
+// 耗费了很多时间,主要是因为不是自己写的,无法排查,方法里写查询么
