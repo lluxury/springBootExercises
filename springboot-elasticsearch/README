@@ -1,0 +1,103 @@
+
+// 安装
+
+
+// 安装java
+// 复制包
+vi ~/.profile
+
+export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_151
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+
+source ~/.profile
+
+// 不能使用root用户
+https://www.elastic.co/downloads/elasticsearch
+// elasticsearch-5.3.0.tar.gz 
+
+wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.2/elasticsearch-2.3.2.tar.gz
+tar zxvf elasticsearch-2.3.2.tar.gz
+cd elasticsearch-2.3.2/
+
+
+vi config/elasticsearch.yml
+    # allow origin
+    http.cors.enabled: true
+    http.cors.allow-origin: "*"
+
+./bin/elasticsearch -d
+
+cerebro  // github
+
+// head
+https://chrome.google.com/webstore/detail/elasticsearch-head/ffmkiejjmecolpfloofpjologoblkegm/
+
+https://github.com/mobz/elasticsearch-head
+// 本地安装,要node环境
+
+ http://localhost:9200/   本地还没
+
+
+ps aux |grep elasticsearch
+kill -7 pid
+
+
+https://docs.spring.io/spring-data/elasticsearch/docs/2.1.0.RELEASE/reference/html/
+
+
+// 先写import再写pom还是挺有用的
+
+// 太晕了,明天整理一下
+
+// pom还是有问题
+
+
+// application.properties
+  仓库
+  节点
+
+
+// 运行
+  postman
+    post json构建数据
+    get 查询
+    head
+
+
+// 结构
+  controller
+  repository
+    ElasticsearchRepository
+  domain
+    Serializable
+  service
+    CityService
+      Long saveCity
+      List<City> searchCity
+    CityESServiceImpl
+      // 实现2个接口
+
+
+// 实现查询
+  Pageable
+    分页参数
+  FunctionScoreQueryBuilder
+    QueryBuilders.functionScoreQuery()
+    .add(QueryBuilders.boolQuery().
+    should(QueryBuilders.matchQuery("cityname", searchContent)),
+    ScoreFunctionBuilders.weightFactorFunction(1000
+  SearchQuery
+    NativeSearchQueryBuilder()
+      .withPageable(pageable)
+    .withQuery(functionScoreQueryBuilder).build()
+  Page<City>  searchPageResults
+    return searchPageResults.getContent();
+
+
+// 分页 function score query 搜索逻辑
+//
+// 创建分页参数，用 FunctionScoreQueryBuilder 定义 Function Score Query，
+// 并设置对应字段的权重分值 城市名称 1000 分，description 100 分
+// 创建该搜索的 DSL 查询，并打印出来。

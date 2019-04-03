@@ -1,0 +1,113 @@
+<!-- # springboot向导生成的pom文件 -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.3.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.yann</groupId>
+    <artifactId>springboot-elasticsearch</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>springboot-elasticsearch</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Spring Boot Elasticsearch 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+
+<!-- 报错 -->
+Error:(52, 76) java: 对于functionScoreQuery(没有参数), 找不到合适的方法
+    方法 org.elasticsearch.index.query.QueryBuilders.functionScoreQuery(org.elasticsearch.index.query.QueryBuilder)不适用
+      (实际参数列表和形式参数列表长度不同)
+    方法 org.elasticsearch.index.query.QueryBuilders.functionScoreQuery(org.elasticsearch.index.query.QueryBuilder,org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder[])不适用
+      (实际参数列表和形式参数列表长度不同)
+    方法 org.elasticsearch.index.query.QueryBuilders.functionScoreQuery(org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder[])不适用
+      (实际参数列表和形式参数列表长度不同)
+    方法 org.elasticsearch.index.query.QueryBuilders.functionScoreQuery(org.elasticsearch.index.query.functionscore.ScoreFunctionBuilder)不适用
+      (实际参数列表和形式参数列表长度不同)
+    方法 org.elasticsearch.index.query.QueryBuilders.functionScoreQuery(org.elasticsearch.index.query.QueryBuilder,org.elasticsearch.index.query.functionscore.ScoreFunctionBuilder)不适用
+      (实际参数列表和形式参数列表长度不同)
+
+
+
+<!-- # github上别人的pom文件 -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.yann</groupId>
+    <artifactId>springboot-elasticsearch</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>springboot-elasticsearch :: 整合 Elasticsearch </name>
+
+    <!-- Spring Boot 启动父依赖 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.1.RELEASE</version>
+    </parent>
+
+    <dependencies>
+
+        <!-- Spring Boot Elasticsearch 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Web 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+    </dependencies>
+</project>
+
+
+
