@@ -29,6 +29,10 @@ vi config/elasticsearch.yml
 
 ./bin/elasticsearch -d
 
+curl 'http://localhost:9200/?pretty'
+
+Sense
+// Sense 是一个 Kibana 应用 它提供交互式的控制台
 cerebro  // github
 
 // head
@@ -54,14 +58,32 @@ https://docs.spring.io/spring-data/elasticsearch/docs/2.1.0.RELEASE/reference/ht
 // pom还是有问题
 
 
-// application.properties
-  仓库
-  节点
+application.properties
+  // 仓库
+  // 节点
 
 
 // 运行
   postman
     post json构建数据
+POST http://127.0.0.1:8080/api/city
+{
+"id":"1",
+"provinceid":"1",
+"cityname":"温岭",
+"description":"温岭是个好城市"
+}
+
+POST http://127.0.0.1:8080/api/city
+{
+"id":"2",
+"provinceid":"2",
+"cityname":"温州",
+"description":"温州是个热城市"
+}
+
+// 需要提交2次?
+
     get 查询
     head
 
@@ -101,3 +123,124 @@ https://docs.spring.io/spring-data/elasticsearch/docs/2.1.0.RELEASE/reference/ht
 // 创建分页参数，用 FunctionScoreQueryBuilder 定义 Function Score Query，
 // 并设置对应字段的权重分值 城市名称 1000 分，description 100 分
 // 创建该搜索的 DSL 查询，并打印出来。
+
+
+// 文档,在 ES 里面，是一个大 JSON 对象
+// 文档的位置由 _index、_type 和 _id 唯一标识
+
+// 索引，用于区分文档成组
+
+// 类型，用于区分索引中的文档
+
+
+// 对比MySQL
+Document 类似于 Record
+Type 类似于 Table
+Index 类似于 Database
+
+Index -> Type ->Document
+
+
+
+// 集群（Cluster）
+
+// 节点（Node）
+
+分片（Shard）
+// 分片，是 ES 节点中最小的工作单元。分片仅仅保存全部数据的一部分
+// 分片的集合是 ES 的索引 
+
+
+// 文档存储的路由
+// 当索引到一个文档（如：报价系统），具体的文档数据（如：报价数据）会存储到一个分片
+shard = hash(routing) % number_of_primary_shards
+
+
+// 集群的健康状态 json
+GET http://127.0.0.1:9200/_cluster/stats
+
+// 注意green
+
+active_primary_shards 集群中的主分片数量
+active_shards 所有分片的汇总值
+relocating_shards 显示当前正在迁移数量
+// 从一个节点迁往其他节点的分片的数量。通常来说应该是 0，
+// 不过在 Elasticsearch 发现集群不太均衡时，该值会上涨。比如说：添加了一个新节点，或者下线了一个节点。
+initializing_shards 刚刚创建的分片的个数
+unassigned_shards 已经在集群状态中存在的分片
+
+
+// 水平扩容? 
+PUT /blogs/_settings
+{
+"number_of_replicas" : 2
+}
+
+
+
+
+ spring-data-elasticsearch
+// Spring Data 基于 Spring 为数据访问提供一种相似且一致性的编程模型，并保存底层数据存储的
+// spring-data-elasticsearch 是 Spring Data 对 Elasticsearch 引擎的实现
+
+
+// 依赖
+ <dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-elasticsearch</artifactId>
+    <version>x.y.z.RELEASE</version>
+</dependency>
+
+
+ElasticsearchRepository
+// 是ES 通用的存储接口的一种默认实现
+
+// ElasticsearchRepository 继承 ElasticsearchCrudRepository ，
+// ElasticsearchCrudRepository 继承 PagingAndSortingRepository 
+// 一般 CRUD 带分页已经支持
+
+
+ElasticsearchTemplate
+// ES 数据操作的中心支持类。和 JdbcTemplate 一样，几乎所有操作都可以使用 ElasticsearchTemplate 来完成
+// ElasticsearchTemplate 实现了 ElasticsearchOperations 和 ApplicationContextAware 接口
+
+// 举例
+// book 拥有 name 和 price 两个属性
+// 支持  name 和 price 列表 ES 查询，分页查询，范围查询等
+
+    public interface BookRepository extends Repository<Book, String> {
+        List<Book> findByNameAndPrice(String name, Integer price);
+        List<Book> findByNameOrPrice(String name, Integer price);
+        Page<Book> findByName(String name,Pageable page);
+        Page<Book> findByNameNot(String name,Pageable page);
+        Page<Book> findByPriceBetween(int price,Pageable page);
+        Page<Book> findByNameLike(String name,Pageable page);
+        @Query("{\"bool\" : {\"must\" : {\"term\" : {\"message\" : \"?0\"}}}}")
+        Page<Book> findByMessage(String message, Pageable pageable);
+    }
+
+
+// SpringBoot 1.5+ 支持 ElasticSearch 2.3.2
+// 2.13 支持 2-4 ?
+
+
+
+// 写错一个变量
+// 导错一个包 搞清楚自己用哪个包还是很重要的
+
+
+// 测试
+http://localhost:8080/api/city/description/find?description=上海
+http://localhost:8080/api/city/description/find?description=上海&score=4
+http://localhost:8080/api/city/and/find?description=上海&score=5
+http://localhost:8080/api/city/and/find?description=上海&score=4
+http://localhost:8080/api/city/or/find?description=上海&score=4
+http://localhost:8080/api/city/description/not/find?description=xx
+http://localhost:8080/api/city/like/find?description=城市
+
+
+
+// 提交处理
+// form 提交 字符串, 服务器转为json
+
+JSONObject json=JSONObject.fromObject(data); 

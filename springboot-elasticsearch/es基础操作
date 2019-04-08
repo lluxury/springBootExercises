@@ -1,0 +1,388 @@
+// 基本操作
+// 概览页面也可以操作
+// head插件创建索引 新建索引
+
+
+// Elasticsearch 内置客户端
+// Node client  非数据节点
+// Transport client 轻量级的传输客户端
+
+
+// 集群中的节点通过端口 9300 彼此通信,如果这个端口没有打开，节点将无法形成一个集群
+
+
+https://www.elastic.co/guide/cn/elasticsearch/guide/current/getting-started.html
+
+
+// curl -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -d '<BODY>'
+// 统计文档数量
+curl -XGET 'http://192.168.142.10:9200/_count?pretty' -d '
+{
+    "query": {
+        "match_all": {}
+    }
+}
+'
+
+// 查看头信息
+curl -i -XGET 'localhost:9200/'
+
+
+
+JSON
+// user 对象：
+
+{
+    "email":      "john@smith.com",
+    "first_name": "John",
+    "last_name":  "Smith",
+    "info": {
+        "bio":         "Eco-warrior and defender of the weak",
+        "age":         25,
+        "interests": [ "dolphins", "whales" ]
+    },
+    "join_date": "2014/05/01"
+}
+
+
+
+// 增删改查
+
+// 先用head 在索引上新建book 索引
+
+
+ // 创建结构化索引
+PUT
+
+http://192.168.142.10:9200/book
+{
+    "settings":{
+        "number_of_shards":5,
+        "number_of_replicas":1,
+    },
+    "mappings":{
+        "novel":{
+            "properties":{
+                "name":{
+                    "type":"text"
+                },
+                "author":{
+                    "type":"keyword"
+                },
+                "word_count":{
+                    "type":"integer"
+                },
+                "publish_date":{
+                    "type":"date",
+                    "format":"yyyy-MM-dd HH:mm:ss || yyyy-MM-dd"
+                }
+            }
+        }
+    }
+}
+
+// 结构化索引，类似MySQL，我们会对索引结构做预定义，包括字段名，字段类型等；
+// 非结构化索引，就类似Mongo，索引结构未知，根据具体的数据来update索引的mapping
+
+
+
+
+// 索引后期要修改，那么只能重建一个你要修改成的索引，然后将数据复制到新的索引中
+http://localhost:9200/_reindex
+{
+  "source": {
+    "index": "old_index"
+  },
+  "dest": {
+    "index": "new_index"
+  }
+}
+
+// 感觉写法怪怪的
+
+
+
+
+
+// 插入数据
+// 指定id插入
+PUT
+http://192.168.142.10:9200/book/novel/1
+{
+    "name" : "测试插入",
+    "author" : "yann",
+    "word_count" : "232",
+    "publish_date" : "2015-02-01"
+}
+
+
+// 不指定id插入
+POST
+http://192.168.142.10:9200/book/novel/
+{
+    "name" : "测试插入2",
+    "author" : "yann",
+    "word_count" : "234",
+    "publish_date" : "2015-02-01"
+}
+
+
+// 修改数据
+// 直接修改doc数据
+POST
+http://192.168.142.10:9200/book/novel/AWnnCRrch5OZZtFGVDfB/_update
+{
+    "doc" : {
+    "name" : "测试修改2",
+    "author" : "yann",
+    "word_count" : "234",
+    "publish_date" : "2015-02-03"
+    }
+}
+
+
+
+// 使用内置脚本修改（可以对数据进行计算）
+ POST
+http://192.168.142.10:9200/book/novel/AWnnCRrch5OZZtFGVDfB/_update
+{
+    "script" : {
+        "lang" : "painless",
+        "inline" : "ctx._source.word_count +=10"
+    }
+}
+// 失败
+
+
+// 使用内置脚本并制定参数进行修改
+ POST
+http://192.168.142.10:9200/book/novel/AWnnCRrch5OZZtFGVDfB/_update
+{
+    "script" : {
+        "lang" : "painless",
+        "inline" : "ctx._source.word_count = params.count",
+        "params" : {
+            "count" : 1000
+        }
+    }
+}
+// 失败
+// inline中的参数必须和params中的参数对应才可
+
+
+
+
+ // 删除数据
+DELETE 
+http://192.168.142.10:9200/book/novel/1
+
+
+ 
+
+// 热爱无人机 （_"We love our drones!"_） 雇员目录
+// 支持包含多值标签、数值、以及全文本的数据
+// 检索任一雇员的完整信息
+// 允许结构化搜索，比如查询 30 岁以上的员工
+// 允许简单的全文搜索以及较复杂的短语搜索
+// 支持在匹配文档内容中高亮显示搜索片段
+// 支持基于数据创建和管理分析仪表盘
+
+
+
+
+// 每个雇员索引一个文档，包含该雇员的所有信息
+// 每个文档都将是 employee 类型 
+// 该类型位于 索引 megacorp 内
+// 该索引保存在 Elasticsearch 集群中
+
+PUT /megacorp/employee/1
+{
+    "first_name" : "John",
+    "last_name" :  "Smith",
+    "age" :        25,
+    "about" :      "I love to go rock climbing",
+    "interests": [ "sports", "music" ]
+}
+
+
+PUT /megacorp/employee/2
+{
+    "first_name" :  "Jane",
+    "last_name" :   "Smith",
+    "age" :         32,
+    "about" :       "I like to collect rock albums",
+    "interests":  [ "music" ]
+}
+
+PUT /megacorp/employee/3
+{
+    "first_name" :  "Douglas",
+    "last_name" :   "Fir",
+    "age" :         35,
+    "about":        "I like to build cabinets",
+    "interests":  [ "forestry" ]
+}
+// 需要分3次操作
+
+
+
+GET /megacorp/employee/1
+// GET 检索, DELETE删除, PUT更新,添加
+
+
+// 全量搜索
+GET /megacorp/employee/_search
+
+// 匹配
+GET /megacorp/employee/_search?q=last_name:Smith
+
+
+
+// 查询表达式
+// 领域特定语言 DSL
+
+curl -X GET "localhost:9200/megacorp/employee/_search" -H 'Content-Type: application/json' -d'
+{
+    "query" : {
+        "match" : {
+            "last_name" : "Smith"
+        }
+    }
+}
+'
+
+GET /megacorp/employee/_search
+{
+    "query" :   {
+        "match" :   {
+            "last_name" :   "Smith"
+        }
+    }
+}
+
+
+
+
+// 氏为 Smith 的雇员，年龄大于 30
+GET /megacorp/employee/_search
+{
+    "query" : {
+        "bool": {
+            "must": {
+                "match" : {
+                    "last_name" : "smith" 
+                }
+            },
+            "filter": {
+                "range" : {
+                    "age" : { "gt" : 30 } 
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+// 全文搜索
+{
+    "query" : {
+        "match" : {
+            "about" : "rock climbing"
+        }
+    }
+}
+
+// 返回两个值, 一个只有rock,评分较低
+// "_score":         0.016878016,
+
+
+
+
+
+// 短语搜索
+GET /megacorp/employee/_search
+{
+    "query" : {
+        "match_phrase" : {
+            "about" : "rock climbing"
+        }
+    }
+}
+
+
+
+// 高亮
+GET /megacorp/employee/_search
+{
+    "query" : {
+        "match_phrase" : {
+            "about" : "rock climbing"
+        }
+    },
+    "highlight": {
+        "fields" : {
+            "about" : {}
+        }
+    }
+}
+
+
+
+
+// 分析
+GET /megacorp/employee/_search
+{
+  "aggs": {
+    "all_interests": {
+      "terms": { "field": "interests" }
+    }
+  }
+}
+
+
+
+
+
+// smith的兴趣爱好
+
+{
+  "query": {
+    "match": {
+      "last_name": "smith"
+    }
+  },
+  "aggs": {
+    "all_interests": {
+      "terms": {
+        "field": "interests"
+      }
+    }
+  }
+}
+
+
+
+
+// 分级汇总,平均年龄
+
+{
+    "aggs" : {
+        "all_interests" : {
+            "terms" : { "field" : "interests" },
+            "aggs" : {
+                "avg_age" : {
+                    "avg" : { "field" : "age" }
+                }
+            }
+        }
+    }
+}
+
+
+
+
