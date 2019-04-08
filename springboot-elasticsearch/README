@@ -244,3 +244,9 @@ http://localhost:8080/api/city/like/find?description=城市
 // form 提交 字符串, 服务器转为json
 
 JSONObject json=JSONObject.fromObject(data); 
+
+
+// pom 疑问解决
+        <!--<version>2.1.4.RELEASE</version>-->
+        <version>1.5.1.RELEASE</version>
+// Springboot 1.5.2 ,兼容问题

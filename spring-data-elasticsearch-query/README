@@ -1,0 +1,117 @@
+
+// spring-data-elasticsearch-query
+// 短语如何进行按权重分匹配搜索,重点是短语,任意相临
+
+// 原理 函数根据搜索词构造搜索查询语句
+
+// 权重分查询
+// 短语匹配
+// 设置权重分最小值
+// 设置分页参数
+
+// 用 Postman 工具新增两个城市
+
+POST http://127.0.0.1:8080/api/city
+{
+    "id":"1",
+    "score":"5",
+    "name":"上海",
+    "description":"上海是个热城市"
+}
+
+POST http://127.0.0.1:8080/api/city
+{
+    "id":"2",
+    "score":"4",
+    "name":"温岭",
+    "description":"Jn不是个沿海城市"
+}
+
+
+GET
+http://localhost:8080/api/city/search?pageNumber=0&pageSize=10&searchContent=城市
+
+// 海是,热城市,之类都可以
+// POSTMAN构造很方便
+// 控制台中，确认日志打印出查询语句的 DSL
+
+
+
+
+// IK
+// 使用 AnalyzeRequestBuilder 获取分词结果
+
+
+ // IK Analyzer 是基于 lucene 实现的分词开源框架
+https://code.google.com/p/ik-analyzer/ 
+
+// Elasticsearch-analysis-ik 是elasticsearch 对应插件
+
+// 分析器 Analyzer: ik_smart 或 ik_max_word
+// 分词器 Tokenizer: ik_smart 或 ik_max_word
+
+// 注意版本对应
+
+// 下载 
+https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v1.9.2/elasticsearch-analysis-ik-1.9.2.zip
+
+// 解压 zip 文件，复制里面的内容到 elasticsearch-2.3.2/plugins/ik
+
+// 在 服务器 elasticsearch-2.3.2/config/elasticsearch.yml 增加配置：
+    index.analysis.analyzer.default.tokenizer : "ik_max_word"
+    index.analysis.analyzer.default.type: "ik"
+
+
+// 配置默认分词器为 ik，并指定分词器为 ik_max_word
+// 重启,验证
+
+curl "localhost:9200/_analyze?analyzer=ik&pretty=true&text=yann的博客是yann.com"
+
+
+http://192.168.142.10:9200/_analyze?analyzer=ik&pretty=true&text=yann的博客是yann.com
+
+// 返回比较合理的中文词 
+
+// 使用 AnalyzeRequestBuilder 获取分词结果
+
+// pom
+<!-- Spring Boot Elasticsearch 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+
+// application
+# ES
+spring.data.elasticsearch.repositories.enabled = true
+spring.data.elasticsearch.cluster-nodes = 127.0.0.1:9300
+
+// 创建一个方法，入参是搜索词，返回的是分词结果列表
+
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
+
+    
+    private List<String> getIkAnalyzeSearchTerms(String searchContent) {
+        // 调用 IK 分词分词
+        AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(elasticsearchTemplate.getClient(),
+                AnalyzeAction.INSTANCE,"indexName",searchContent);
+        ikRequest.setTokenizer("ik");
+        List<AnalyzeResponse.AnalyzeToken> ikTokenList = ikRequest.execute().actionGet().getTokens();
+
+        // 循环赋值
+        List<String> searchTermList = new ArrayList<>();
+        ikTokenList.forEach(ikToken -> { searchTermList.add(ikToken.getTerm()); });
+
+        return searchTermList;
+    }
+// 这块还不熟
+
+// indexName 这里是指在 ES 设置的索引名称 比如book
+
+
+// 从容器注入的 ElasticsearchTemplate Bean 中获取 Client ，
+// 再通过 AnalyzeRequestBuilder 分析请求类型中进行分词并获取分词结果 AnalyzeResponse.AnalyzeToken 列表
+
+// 默认配置了 IK 分词器，则 DSL 去 ES 查询时会自动调用 IK 分词
